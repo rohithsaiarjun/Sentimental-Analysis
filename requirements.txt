@@ -5,4 +5,4 @@ spacy == 3.7.5
 scikit-learn == 1.6.1
 joblib == 1.4.2
 spacy == 3.7.5
-
+thinc==8.2.3
