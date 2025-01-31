@@ -46,9 +46,9 @@ def lemmatizer(text):
     return ' '.join(sent)
 
 st.title("Comprehensive Guide on NLP")
-st.markdown("By Dangeti Sravya")
-image = Image.open("image.png")
-st.image(image, use_column_width=True)
+st.markdown("By Dangeti Rohith Sai Arjun")
+# image = Image.open("image.png")
+# st.image(image, use_column_width=True)
 
 
 st.subheader("Enter your text here:")
@@ -75,5 +75,5 @@ if st.button("Predict"):
             st.subheader("The sentiment of the given text is: Positive")
     else:
         st.subheader("Please enter a text for prediction.")
-image = Image.open("sentimental analysis image.png")
-st.image(image, use_column_width=True)
+# image = Image.open("sentimental analysis image.png")
+# st.image(image, use_column_width=True)
