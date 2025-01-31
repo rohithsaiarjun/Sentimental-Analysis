@@ -16,28 +16,32 @@ import string
 import nltk
 import spacy
 
-with open("svm_model.pkl", "rb") as file:
-    model = pickle.load(file)
-with open("tfidf_vectorizer.pkl", "rb") as file:
-    vectorizer = pickle.load(file)
+# Load pre-trained model and vectorizer
+try:
+    with open("svm_model.pkl", "rb") as file:
+        model = pickle.load(file)
+    with open("tfidf_vectorizer.pkl", "rb") as file:
+        vectorizer = pickle.load(file)
+except FileNotFoundError:
+    st.error("Model or vectorizer file not found. Please ensure the files are in the correct directory.")
+    st.stop()
 
+# Download NLTK stopwords
 nltk.download('stopwords')
 stopwords = nltk.corpus.stopwords.words('english')
+
+# Text preprocessing functions
 def clean_text(text):
-    text = text.lower()
-    return text.strip()
+    return text.lower().strip()
 
 def remove_punctuation(text):
-    punctuation_free = "".join([i for i in text if i not in string.punctuation])
-    return punctuation_free
+    return "".join([i for i in text if i not in string.punctuation])
 
 def tokenization(text):
-    tokens = re.split(' ', text)
-    return tokens
+    return re.split(' ', text)
 
 def remove_stopwords(text):
-    output = " ".join(i for i in text if i not in stopwords)
-    return output
+    return " ".join(i for i in text if i not in stopwords)
 
 def lemmatizer(text):
     nlp = spacy.load('en_core_web_sm')
@@ -45,35 +49,46 @@ def lemmatizer(text):
     sent = [token.lemma_ for token in doc if not token.text in set(stopwords)]
     return ' '.join(sent)
 
+# Streamlit app
 st.title("Comprehensive Guide on NLP")
 st.markdown("By Dangeti Rohith Sai Arjun")
+
+# Display image
 image = Image.open("image.png")
-st.image(image, use_column_width=True)
+st.image(image, use_container_width=True)
 
-
+# User input
 st.subheader("Enter your text here:")
 user_input = st.text_area("")
 
-if user_input:
-    user_input = clean_text(user_input)
-    user_input = remove_punctuation(user_input)
-    user_input = user_input.lower()
-    user_input = tokenization(user_input)
-    user_input = remove_stopwords(user_input)
-    user_input = lemmatizer(user_input)
-
+# Preprocess and predict
 if st.button("Predict"):
     if user_input:
-        text_vectorized = vectorizer.transform([user_input])
-        prediction = model.predict(text_vectorized)[0]
-        st.header("Prediction:")
-        if prediction == -1:
-            st.subheader("The sentiment of the given text is: Negative")
-        elif prediction == 0:
-            st.subheader("The sentiment of the given text is: Neutral")
-        elif prediction == 1:
-            st.subheader("The sentiment of the given text is: Positive")
+        try:
+            # Preprocess the input text
+            user_input = clean_text(user_input)
+            user_input = remove_punctuation(user_input)
+            user_input = tokenization(user_input)
+            user_input = remove_stopwords(user_input)
+            user_input = lemmatizer(user_input)
+
+            # Vectorize and predict
+            text_vectorized = vectorizer.transform([user_input])
+            prediction = model.predict(text_vectorized)[0]
+
+            # Display prediction
+            st.header("Prediction:")
+            if prediction == -1:
+                st.subheader("The sentiment of the given text is: Negative")
+            elif prediction == 0:
+                st.subheader("The sentiment of the given text is: Neutral")
+            elif prediction == 1:
+                st.subheader("The sentiment of the given text is: Positive")
+        except Exception as e:
+            st.error(f"An error occurred during prediction: {e}")
     else:
         st.subheader("Please enter a text for prediction.")
+
+# Display sentiment analysis image
 image = Image.open("sentimental analysis image.png")
-st.image(image, use_column_width=True)
+st.image(image, use_container_width=True)
