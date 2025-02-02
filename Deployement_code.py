@@ -72,4 +72,4 @@ if st.button("Predict"):
         st.subheader("Please enter a text for prediction.")
 
 image = Image.open("sentimental analysis image.png")
-st.image(image, use_column_width=True)
+st.image(image, use_container_width=True)
